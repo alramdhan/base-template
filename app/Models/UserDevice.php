@@ -6,5 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserDevice extends Model
 {
-    //
+    protected $fillable = [
+        'user_id',
+        'device_id',
+        'device_model',
+        'public_key'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

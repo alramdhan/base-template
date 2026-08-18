@@ -10,5 +10,13 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // Endpoint Publik
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/login/biometric', [AuthController::class, 'loginBiometric'])->middleware('throttle:5,1');
+Route::prefix("v1")->group(function() {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login/biometric', [AuthController::class, 'verifyBiometric'])->middleware('throttle:5,1');
+    //Route::post('/biometric/register', []);
+
+    Route::middleware('auth:sanctum')->group(function() {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/biometric/register', [AuthController::class, 'registerBiometric']);
+    });
+});

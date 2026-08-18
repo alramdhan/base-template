@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('device_id')->unique();
             $table->text('public_key');
-            $table->string('device_model');
+            $table->string('device_model')->nullable();
             $table->timestamps();
         });
     }
