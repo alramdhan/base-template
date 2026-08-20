@@ -65,42 +65,6 @@ class AuthController extends Controller
             return $this->errorResponse($e->getMessage(), $statusCode);
         }
     }
-
-    // public function verifyBiometric(BiometricLoginRequest $request): JsonResponse
-    // {
-        // $deviceId = $request->device_id;
-        // $payload = $request->payload;
-        // $signature = base64_decode($request->signature);
-        // // $challenge = Cache::pull('biometric_challenge_'.$deviceId);
-
-        // if(!challenge) {
-        //     return $this->errorResponse('Challenge expired atau tidak valid', 401);
-        // }
-
-        // $device = UserDevice::where('device_id', $deviceId)->first();
-
-        // if(!$device) {
-        //     return $this->errorResponse('Perangkat tidak dikenali!', 404);
-        // }
-
-        // $publicKey = $device->public_key;
-        // $isValid = openssl_verify($payload, $signature, $publicKey, OPENSSL_ALGO_SHA256);
-
-        // if($isValid === 1) {
-        //     $user = $device->user;
-        //     // pembatasan token lama
-        //     $user->tokens()->delete();
-        //     $token = $user->createToken('api_token')->plainTextToken;
-
-        //     return $this->successResponse([
-        //         'user' => $user,
-        //         'access_token' => $token,
-        //         'token_type' => 'Bearer'
-        //     ], 'Login Berhasil');
-        // }
-
-        // return $this->errorResponse('Signature tidak valid', 401);
-    // }
     
     public function login(LoginRequest $request): JsonResponse
     {
@@ -115,14 +79,16 @@ class AuthController extends Controller
         }
 
         // pembatasan token lama
-        $user->tokens()->delete();
+        $user->tokens()->delete($user->name, 'api_token');
+        $expiresAt = $request->remember_me ? now()->addMonths(6) : now()->addHours(24);
         // buat token baru
-        $token = $user->createToken('api_token')->plainTextToken;
+        $token = $user->createToken('api_token', ['*'], $expiresAt)->plainTextToken;
 
         return $this->successResponse([
             'user' => $user,
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'expires_at' => $expiresAt
         ], 'Login Berhasil');
     }
 
