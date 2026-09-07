@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         $this->call([
-            RolePermissionSeeder::class
+            RolePermissionSeeder::class,
+            ProductTableSeeder::class
         ]);
         // User::factory()->count(3)->create();
     }
